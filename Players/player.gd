@@ -89,7 +89,6 @@ func player_run(delta : float):
 		velocity.x = 0
 		current_state = State.Idle
 
-#Hello my name is hassam aziz
 	
 func player_jump(delta: float):
 	var jump_input : bool = Input.is_action_just_pressed("jump")
