@@ -1,7 +1,13 @@
+# Godot-specific folders/files
 .import/
-.export/
-*.import
-*.tmp
+.godot/
+export.cfg
+export_presets.cfg
+
+# Build artifacts and logs
 *.log
-*.mono
-.cache/
+*.tmp
+*.import
+
+# Mono (C# projects)
+.mono/
