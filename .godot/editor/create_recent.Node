@@ -1,0 +1,14 @@
+Label
+MarginContainer
+TextureRect
+CanvasLayer
+Node
+CollisionShape2D
+Area2D
+Sprite2D
+StaticBody2D
+AnimatedSprite2D
+Node2D
+AcceptDialog
+OptionButton
+TextureButton

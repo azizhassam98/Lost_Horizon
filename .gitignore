@@ -1,0 +1,7 @@
+.import/
+.export/
+*.import
+*.tmp
+*.log
+*.mono
+.cache/
