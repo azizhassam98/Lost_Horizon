@@ -113,7 +113,7 @@ radius = 14.0
 a = Vector2(2.30369, -87.9698)
 b = Vector2(-2.09426, 79.9726)
 
-[node name="EnemyDino" type="CharacterBody2D" groups=["Enemy2"]]
+[node name="EnemyDino" type="CharacterBody2D" groups=["Enemy", "Enemy2"]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_f0jny")

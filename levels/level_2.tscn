@@ -23,10 +23,6 @@ layer_2/tile_data = PackedInt32Array(-1245180, 1048576, 7, -1179644, 1048576, 8,
 
 [node name="Player" parent="." index="4"]
 position = Vector2(208, -216)
-jump = -350
-speed = 400
-jump_horizontal_speed = 300
-jump_count = 2
 
 [node name="Enemies" type="Node" parent="." index="5"]
 
