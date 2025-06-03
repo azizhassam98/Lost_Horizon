@@ -19,7 +19,7 @@ var shoot_duration := 0.3 # seconds
 var shoot_timer := 0.0
 
 
-enum State { Idle, Run, Jump, ShootIdle, ShootRun }
+enum State { Idle, Run, Jump, ShootIdle, ShootRun,Crouch }
 
 var current_state : State
 var muzzle_position 
@@ -31,28 +31,29 @@ func _ready():
 	current_state = State.Idle
 	muzzle_position = muzzle.position
 
-func _physics_process(delta : float):
+func _physics_process(delta: float):
 	player_falling(delta)
 	player_jump(delta)
+	player_crouch(delta)
 	player_muzzle_position()
 	player_shooting(delta)
 
-
-	# Manage shoot timer
+	# Update shooting cooldown
 	if shoot_timer > 0:
 		shoot_timer -= delta
 		if shoot_timer <= 0:
-			# Return to idle or run depending on movement
-			var direction = input_movement()
-		if is_on_floor() and current_state == State.Jump:
-			var direction = input_movement()
-			current_state = State.Run if direction != 0 else State.Idle
+			if is_on_floor():
+				var direction = input_movement()
+				if current_state in [State.ShootIdle, State.ShootRun]:
+					current_state = State.Run if direction != 0 else State.Idle
 	else:
-		player_idle(delta)
-		player_run(delta)
+		if current_state != State.Crouch and current_state not in [State.ShootIdle, State.ShootRun, State.Jump]:
+			player_idle(delta)
+			player_run(delta)
 
 	move_and_slide()
 	player_animations()
+
 
 
 func player_falling(delta: float):
@@ -71,7 +72,16 @@ func player_falling(delta: float):
 func player_idle(delta : float):
 	if is_on_floor() and current_state != State.Jump and shoot_timer <= 0:
 		current_state = State.Idle
-
+		
+		
+func player_crouch(delta: float):
+	if is_on_floor() and Input.is_action_pressed("crouch"):
+		current_state = State.Crouch
+		velocity.x = 0 
+	else:
+		if current_state == State.Crouch:
+			var direction = input_movement()
+			current_state = State.Run if direction != 0 else State.Idle
 
 		
 func player_run(delta : float):
@@ -110,17 +120,17 @@ func player_jump(delta: float):
 func player_shooting(delta: float):
 	var direction = input_movement()
 
-	# Handle shooting input every frame
 	if Input.is_action_pressed("shoot"):
+		# Only shoot if timer allows
 		if shoot_timer <= 0:
 			var bullet_instance = bullet.instantiate() as Node2D
 			bullet_instance.direction = direction if direction != 0 else (1 if not animated_sprite_2d.flip_h else -1)
 			bullet_instance.global_position = muzzle.global_position
 			get_parent().add_child(bullet_instance)
 
-			shoot_timer = shoot_duration  # reset shoot timer
+			shoot_timer = shoot_duration  # Start cooldown
 
-		# Handle movement while shooting
+		# Set proper shoot state without resetting shoot_timer
 		if is_on_floor():
 			if direction != 0:
 				current_state = State.ShootRun
@@ -130,8 +140,8 @@ func player_shooting(delta: float):
 				current_state = State.ShootIdle
 				velocity.x = 0
 	else:
-		# If not shooting, don't override run or idle behavior
-		shoot_timer = 0
+		# Do not reset timer here; let it count down naturally
+		pass
 	
 func player_muzzle_position():
 	var direction = input_movement()
@@ -144,16 +154,23 @@ func player_muzzle_position():
 func player_animations():
 	match current_state:
 		State.Idle:
-			animated_sprite_2d.play("idle")
+			if animated_sprite_2d.animation != "idle":
+				animated_sprite_2d.play("idle")
+		State.Crouch:
+			if animated_sprite_2d.animation != "crouch":
+				animated_sprite_2d.play("crouch")
 		State.Jump:
-			animated_sprite_2d.play("jump")
+			if animated_sprite_2d.animation != "jump":
+				animated_sprite_2d.play("jump")
 		State.Run:
-			if animated_sprite_2d.animation != "run_shoot":
+			if animated_sprite_2d.animation != "run":
 				animated_sprite_2d.play("run")
 		State.ShootIdle:
-			animated_sprite_2d.play("shoot")
+			if animated_sprite_2d.animation != "shoot":
+				animated_sprite_2d.play("shoot")
 		State.ShootRun:
-			animated_sprite_2d.play("run_shoot")
+			if animated_sprite_2d.animation != "run_shoot":
+				animated_sprite_2d.play("run_shoot")
 
 
 

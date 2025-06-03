@@ -24,6 +24,7 @@ layer_2/tile_data = PackedInt32Array(-1245180, 1048576, 7, -1179644, 1048576, 8,
 [node name="Player" parent="." index="4"]
 position = Vector2(208, -216)
 jump = -350
+speed = 400
 jump_horizontal_speed = 300
 jump_count = 2
 
@@ -43,4 +44,4 @@ smoothing_distance = 2
 [node name="Door" parent="." index="8" instance=ExtResource("4_v5uil")]
 position = Vector2(80, -208)
 next_scene = "Level2"
-key_id = "level1"
+key_id = "level2"
